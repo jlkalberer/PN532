@@ -1,7 +1,7 @@
 {
   "name": "PN532",
   "author": "Seeed-Studio",
-  "license": "MIT",
+  "license": "BSD License",
   "version": "0.0.10",
   "description": "This is an Arduino library for PN532 to use NFC technology"
 }
