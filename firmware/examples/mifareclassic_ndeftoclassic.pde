@@ -8,7 +8,7 @@
 */
 /**************************************************************************/
 
-#include <SPI.h>
+#include "application.h"
 #include <PN532_SPI.h>
 #include "PN532.h"
 

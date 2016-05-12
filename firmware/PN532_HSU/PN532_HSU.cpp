@@ -3,7 +3,7 @@
 #include "PN532_debug.h"
 
 
-PN532_HSU::PN532_HSU(HardwareSerial &serial)
+PN532_HSU::PN532_HSU(USARTSerial &serial)
 {
     _serial = &serial;
     command = 0;

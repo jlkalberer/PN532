@@ -3,8 +3,11 @@
 #define __PN532_SPI_H__
 
 #include "application.h"
-#include "Pins.h"
 #include "PN532Interface.h"
+
+#ifndef SPI_HW_MODE
+#define SPI_HW_MODE 1
+#endif
 
 class PN532_SPI : public PN532Interface {
 public:
