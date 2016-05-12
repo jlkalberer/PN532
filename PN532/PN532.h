@@ -9,7 +9,7 @@
 #ifndef __PN532_H__
 #define __PN532_H__
 
-#include <stdint.h>
+#include "application.h"
 #include "PN532Interface.h"
 
 // PN532 Commands

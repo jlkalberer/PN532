@@ -1,9 +1,7 @@
-
+#include "application.h"
 
 #ifndef __PN532_INTERFACE_H__
 #define __PN532_INTERFACE_H__
-
-#include <stdint.h>
 
 #define PN532_PREAMBLE                (0x00)
 #define PN532_STARTCODE1              (0x00)
@@ -53,4 +51,3 @@ public:
 };
 
 #endif
-

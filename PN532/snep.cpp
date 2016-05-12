@@ -70,7 +70,7 @@ int16_t SNEP::read(uint8_t *buf, uint8_t len, uint16_t timeout)
 	}
 
 	// check SNEP version
-	
+
 	// in case of platform specific bug, shift SNEP message for 4 bytes.
 	// tested on Nexus 5, Android 5.1
 	if (SNEP_DEFAULT_VERSION != buf[0] && SNEP_DEFAULT_VERSION == buf[4]) {
@@ -78,7 +78,7 @@ int16_t SNEP::read(uint8_t *buf, uint8_t len, uint16_t timeout)
 			buf[i] = buf[i + 4];
 		}
 	}
-	
+
 	if (SNEP_DEFAULT_VERSION != buf[0]) {
 		DMSG(F("SNEP->read: The received SNEP message's major version is different, me: "));
 		DMSG(SNEP_DEFAULT_VERSION);
@@ -99,7 +99,7 @@ int16_t SNEP::read(uint8_t *buf, uint8_t len, uint16_t timeout)
 	uint32_t length = (buf[2] << 24) + (buf[3] << 16) + (buf[4] << 8) + buf[5];
 	// length should not be more than 244 (header + body < 255, header = 6 + 3 + 2)
 	if (length > (status - 6)) {
-		DMSG("The SNEP message is too large: "); 
+		DMSG("The SNEP message is too large: ");
 		DMSG_INT(length);
 		DMSG_INT(status - 6);
 		DMSG("\n");

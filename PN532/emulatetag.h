@@ -13,20 +13,20 @@
 
 #include "PN532.h"
 
-#define NDEF_MAX_LENGTH 128  // altough ndef can handle up to 0xfffe in size, arduino cannot.
+#define NDEF_MAX_LENGTH 256  // altough ndef can handle up to 0xfffe in size, a Core/Photon/etc probably cannot.
 typedef enum {COMMAND_COMPLETE, TAG_NOT_FOUND, FUNCTION_NOT_SUPPORTED, MEMORY_FAILURE, END_OF_FILE_BEFORE_REACHED_LE_BYTES} responseCommand;
 
 class EmulateTag{
 
 public:
 EmulateTag(PN532Interface &interface) : pn532(interface), uidPtr(0), tagWrittenByInitiator(false), tagWriteable(true), updateNdefCallback(0) { }
-  
+
   bool init();
 
   bool emulate(const uint16_t tgInitAsTargetTimeout = 0);
 
   /*
-   * @param uid pointer to byte array of length 3 (uid is 4 bytes - first byte is fixed) or zero for uid 
+   * @param uid pointer to byte array of length 3 (uid is 4 bytes - first byte is fixed) or zero for uid
    */
   void setUid(uint8_t* uid = 0);
 

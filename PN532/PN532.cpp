@@ -6,10 +6,8 @@
 */
 /**************************************************************************/
 
-#include "Arduino.h"
 #include "PN532.h"
 #include "PN532_debug.h"
-#include <string.h>
 
 #define HAL(func)   (_interface->func)
 
@@ -39,22 +37,13 @@ void PN532::begin()
 /**************************************************************************/
 void PN532::PrintHex(const uint8_t *data, const uint32_t numBytes)
 {
-#ifdef ARDUINO
     for (uint8_t i = 0; i < numBytes; i++) {
         if (data[i] < 0x10) {
-            Serial.print(" 0");
-        } else {
-            Serial.print(' ');
+            Serial.print("0");
         }
         Serial.print(data[i], HEX);
     }
     Serial.println("");
-#else
-    for (uint8_t i = 0; i < numBytes; i++) {
-        printf(" %2X", data[i]);
-    }
-    printf("\n");
-#endif
 }
 
 /**************************************************************************/
@@ -101,7 +90,7 @@ void PN532::PrintHexChar(const uint8_t *data, const uint32_t numBytes)
         } else {
             printf("%c", c);
         }
-        printf("\n");
+        printf("\r\n");
     }
 #endif
 }
@@ -115,7 +104,7 @@ void PN532::PrintHexChar(const uint8_t *data, const uint32_t numBytes)
 /**************************************************************************/
 uint32_t PN532::getFirmwareVersion(void)
 {
-    uint32_t response;
+    uint32_t response = 0;
 
     pn532_packetbuffer[0] = PN532_COMMAND_GETFIRMWAREVERSION;
 
@@ -174,7 +163,7 @@ bool PN532::writeGPIO(uint8_t pinstate)
 
     DMSG("Writing P3 GPIO: ");
     DMSG_HEX(pn532_packetbuffer[1]);
-    DMSG("\n");
+    DMSG("\r\n");
 
     // Send the WRITEGPIO command (0x0E)
     if (HAL(writeCommand)(pn532_packetbuffer, 3))
@@ -220,7 +209,7 @@ uint8_t PN532::readGPIO(void)
     DMSG("P3 GPIO: "); DMSG_HEX(pn532_packetbuffer[7]);
     DMSG("P7 GPIO: "); DMSG_HEX(pn532_packetbuffer[8]);
     DMSG("I0I1 GPIO: "); DMSG_HEX(pn532_packetbuffer[9]);
-    DMSG("\n");
+    DMSG("\r\n");
 
     return pn532_packetbuffer[0];
 }
@@ -237,7 +226,7 @@ bool PN532::SAMConfig(void)
     pn532_packetbuffer[2] = 0x14; // timeout 50ms * 20 = 1 second
     pn532_packetbuffer[3] = 0x01; // use IRQ pin!
 
-    DMSG("SAMConfig\n");
+    DMSG("SAMConfig\r\n");
 
     if (HAL(writeCommand)(pn532_packetbuffer, 4))
         return false;
@@ -321,11 +310,21 @@ bool PN532::readPassiveTargetID(uint8_t cardbaudrate, uint8_t *uid, uint8_t *uid
     sens_res <<= 8;
     sens_res |= pn532_packetbuffer[3];
 
-    DMSG("ATQA: 0x");  DMSG_HEX(sens_res);
-    DMSG("SAK: 0x");  DMSG_HEX(pn532_packetbuffer[4]);
-    DMSG("\n");
+    uint16_t sak = pn532_packetbuffer[4];
 
-    /* Card appears to be Mifare Classic */
+    DMSG("ATQA: 0x");  DMSG_HEX(sens_res);
+    DMSG("\r\n");
+    DMSG("SAK: 0x");  DMSG_HEX(sak);
+    DMSG("\r\n");
+
+    /* if card is not mifare ultralight */
+    if (sens_res != 0x44 || sak != 0x0) {
+      DMSG("\r\n");
+      DMSG("Card is not mifare ultralight");
+      DMSG("\r\n");
+      return 0;
+    }
+
     *uidLength = pn532_packetbuffer[5];
 
     for (uint8_t i = 0; i < pn532_packetbuffer[5]; i++) {
@@ -419,7 +418,7 @@ uint8_t PN532::mifareclassic_AuthenticateBlock (uint8_t *uid, uint8_t uidLen, ui
     // for an auth success it should be bytes 5-7: 0xD5 0x41 0x00
     // Mifare auth error is technically byte 7: 0x14 but anything other and 0x00 is not good
     if (pn532_packetbuffer[0] != 0x00) {
-        DMSG("Authentification failed\n");
+        DMSG("Authentification failed\r\n");
         return 0;
     }
 
@@ -622,7 +621,7 @@ uint8_t PN532::mifareclassic_WriteNDEFURI (uint8_t sectorNumber, uint8_t uriIden
 uint8_t PN532::mifareultralight_ReadPage (uint8_t page, uint8_t *buffer)
 {
     if (page >= 64) {
-        DMSG("Page value out of range\n");
+        DMSG("Page value out of range\r\n");
         return 0;
     }
 
@@ -712,7 +711,7 @@ bool PN532::inDataExchange(uint8_t *send, uint8_t sendLength, uint8_t *response,
     }
 
     if ((response[0] & 0x3f) != 0) {
-        DMSG("Status code indicates an error\n");
+        DMSG("Status code indicates an error\r\n");
         return false;
     }
 
@@ -743,7 +742,7 @@ bool PN532::inListPassiveTarget()
     pn532_packetbuffer[1] = 1;
     pn532_packetbuffer[2] = 0;
 
-    DMSG("inList passive target\n");
+    DMSG("inList passive target\r\n");
 
     if (HAL(writeCommand)(pn532_packetbuffer, 3)) {
         return false;
@@ -764,18 +763,22 @@ bool PN532::inListPassiveTarget()
 }
 
 int8_t PN532::tgInitAsTarget(const uint8_t* command, const uint8_t len, const uint16_t timeout){
-  
+
   int8_t status = HAL(writeCommand)(command, len);
     if (status < 0) {
+      DMSG("Write failed\r\n");
         return -1;
     }
 
     status = HAL(readResponse)(pn532_packetbuffer, sizeof(pn532_packetbuffer), timeout);
+
     if (status > 0) {
+      DMSG("SUCCESS\r\n");
         return 1;
     } else if (PN532_TIMEOUT == status) {
         return 0;
     } else {
+      DMSG("Read failed\r\n");
         return -2;
     }
 }
@@ -812,8 +815,9 @@ int16_t PN532::tgGetData(uint8_t *buf, uint8_t len)
         return -1;
     }
 
-    int16_t status = HAL(readResponse)(buf, len, 3000);
+    int16_t status = HAL(readResponse)(buf, len, 100);
     if (0 >= status) {
+        DMSG("status is not ok\r\n");
         return status;
     }
 
@@ -821,7 +825,7 @@ int16_t PN532::tgGetData(uint8_t *buf, uint8_t len)
 
 
     if (buf[0] != 0) {
-        DMSG("status is not ok\n");
+        DMSG("status is not ok (buf)\r\n");
         return -5;
     }
 
@@ -836,7 +840,7 @@ bool PN532::tgSetData(const uint8_t *header, uint8_t hlen, const uint8_t *body, 
 {
     if (hlen > (sizeof(pn532_packetbuffer) - 1)) {
         if ((body != 0) || (header == pn532_packetbuffer)) {
-            DMSG("tgSetData:buffer too small\n");
+            DMSG("tgSetData:buffer too small\r\n");
             return false;
         }
 
@@ -878,5 +882,3 @@ int16_t PN532::inRelease(const uint8_t relevantTarget){
     // read data packet
     return HAL(readResponse)(pn532_packetbuffer, sizeof(pn532_packetbuffer));
 }
-
-
