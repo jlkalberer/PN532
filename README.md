@@ -1,6 +1,6 @@
-## NFC library for Arduino
+## NFC library for Particle
 
-This is an Arduino library for PN532 to use NFC technology.
+This is an Particle library for PN532 to use NFC technology.
 It is for [NFC Shield](http://goo.gl/Cac2OH), [Xadow NFC](http://goo.gl/qBZMt0) and [Grove - NFC](http://goo.gl/L3Uw5G).
 
 [![NFC Shield](http://www.seeedstudio.com/depot/bmz_cache/2/2d9e045860b92102231b021a11ebe01b.image.90x67.jpg)](http://goo.gl/Cac2OH)
@@ -20,17 +20,24 @@ It is for [NFC Shield](http://goo.gl/Cac2OH), [Xadow NFC](http://goo.gl/qBZMt0) 
 + To read/write NFC Type 4 tag
 
 ### Getting Started
++ Easiest Way
+
+  1. Go to [Particle Build](https://build.particle.io) and create a project
+  2. Search for the library
+  3. Add it to your project.
+
+
 + Easy way
 
-  1. Download [zip file](http://goo.gl/F6beRM) and extract the 4 folders(PN532, PN532_SPI, PN532_I2C and PN532_HSU) into Arduino's libraries.
-  2. Download [Don's NDEF library](http://goo.gl/ewxeAe)， extract it into Arduino's libraries and rename it to NDEF.
+  1. Download the zip file and extract the 4 folders(PN532, PN532_SPI, PN532_I2C and PN532_HSU) into Particle's libraries.
+  2. Download Don's NDEF library for Particle， extract it into Particle's libraries and rename it to NDEF.
   3. Follow the examples of the two libraries.
 
 + Git way for Linux/Mac (recommended)
 
   1. Get PN532 library and NDEF library
 
-          cd {Arduino}\libraries  
+          cd {My_Project}\libraries  
           git clone --recursive https://github.com/Seeed-Studio/PN532.git NFC
           ln -s NFC/PN532 ./
           ln -s NFC/PN532_SPI ./
@@ -42,7 +49,7 @@ It is for [NFC Shield](http://goo.gl/Cac2OH), [Xadow NFC](http://goo.gl/qBZMt0) 
 
 ### Contribution
 It's based on [Adafruit_NFCShield_I2C](http://goo.gl/pk3FdB). 
-[Seeed Studio](http://goo.gl/zh1iQh) rewrite the library to make it easy to support different interfaces and platforms. 
+[Seeed Studio](http://goo.gl/zh1iQh) rewrote the library to make it easy to support different interfaces and platforms. 
 @Don writes the [NDEF library](http://goo.gl/jDjsXl) to make it more easy to use. 
 @JiapengLi adds HSU interface.
 @awieser adds card emulation function.

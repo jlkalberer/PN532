@@ -3,5 +3,5 @@
   "author": "Seeed-Studio",
   "license": "BSD License",
   "version": "0.0.11",
-  "description": "This is an Arduino library for PN532 to use NFC technology"
+  "description": "This is an Particle library for PN532 to use NFC technology"
 }
